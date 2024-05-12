@@ -10,6 +10,7 @@ const MenuSection = () => {
     control,
     name: "menuItems",
   });
+
   return (
     <div className="space-y-2">
       <div>
