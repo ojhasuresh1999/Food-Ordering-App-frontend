@@ -9,7 +9,7 @@ import MenuSection from "./MenuSection";
 import ImageSection from "./ImageSection";
 import LoadingButton from "@/components/LoadingButton";
 import { Button } from "@/components/ui/button";
-import { Restaurant } from "@/types";
+// import { Restaurant } from "@/types";
 import { useEffect } from "react";
 
 const formSchema = z.object({
@@ -45,7 +45,7 @@ const formSchema = z.object({
 type RestaurantFormData = z.infer<typeof formSchema>;
 
 type Props = {
-  restaurant?: Restaurant;
+  restaurant?: any;
   onSave: (restaurantFormData: FormData) => void;
   isLoading: boolean;
 };
@@ -63,18 +63,20 @@ const ManageRestaurantForm = ({ onSave, isLoading, restaurant }: Props) => {
     if (!restaurant) {
       return;
     }
-    console.log("🚀 ~ useEffect ~ restaurant:", restaurant);
+    console.log("🚀 ~ useEffect ~ restaurant:", restaurant.restaurant);
     const deliveryPriceFormatted = parseInt(
       restaurant.deliveryPrice?.toFixed(2)
     );
 
-    const menuItemsFormatted = restaurant?.menuItems?.map((item) => ({
-      ...item,
-      price: parseInt(item.price?.toFixed(2)),
-    }));
+    const menuItemsFormatted = restaurant.restaurant?.menuItems?.map(
+      (item: { name: string; price: number }) => ({
+        ...item,
+        price: parseInt(item.price?.toFixed(2)),
+      })
+    );
 
     const updatedRestaurant = {
-      ...restaurant,
+      ...restaurant.restaurant,
       deliveryPrice: deliveryPriceFormatted,
       menuItems: menuItemsFormatted,
     };
