@@ -63,7 +63,6 @@ const ManageRestaurantForm = ({ onSave, isLoading, restaurant }: Props) => {
     if (!restaurant) {
       return;
     }
-    console.log("🚀 ~ useEffect ~ restaurant:", restaurant.restaurant);
     const deliveryPriceFormatted = parseInt(
       restaurant.deliveryPrice?.toFixed(2)
     );
