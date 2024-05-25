@@ -12,35 +12,41 @@ import { Button } from "@/components/ui/button";
 // import { Restaurant } from "@/types";
 import { useEffect } from "react";
 
-const formSchema = z.object({
-  restaurantName: z.string({
-    required_error: "Restaurant name is required",
-  }),
-  city: z.string({
-    required_error: "City is required",
-  }),
-  country: z.string({
-    required_error: "Country is required",
-  }),
-  deliveryPrice: z.coerce.number({
-    required_error: "Delivery price is required",
-    invalid_type_error: "Delivery price must be a valid number",
-  }),
-  estimatedDeliveryTime: z.coerce.number({
-    required_error: "Estimated delivery time is required",
-    invalid_type_error: "Estimated delivery time must be a valid number",
-  }),
-  cuisine: z.array(z.string()).nonempty({
-    message: "Please select at least one cuisine",
-  }),
-  menuItems: z.array(
-    z.object({
-      name: z.string().min(1, { message: "Name is required" }),
-      price: z.coerce.number().min(1, { message: "Price is required" }),
-    })
-  ),
-  imageFile: z.instanceof(File, { message: "Image is required" }),
-});
+const formSchema = z
+  .object({
+    restaurantName: z.string({
+      required_error: "Restaurant name is required",
+    }),
+    city: z.string({
+      required_error: "City is required",
+    }),
+    country: z.string({
+      required_error: "Country is required",
+    }),
+    deliveryPrice: z.coerce.number({
+      required_error: "Delivery price is required",
+      invalid_type_error: "Delivery price must be a valid number",
+    }),
+    estimatedDeliveryTime: z.coerce.number({
+      required_error: "Estimated delivery time is required",
+      invalid_type_error: "Estimated delivery time must be a valid number",
+    }),
+    cuisine: z.array(z.string()).nonempty({
+      message: "Please select at least one cuisine",
+    }),
+    menuItems: z.array(
+      z.object({
+        name: z.string().min(1, { message: "Name is required" }),
+        price: z.coerce.number().min(1, { message: "Price is required" }),
+      })
+    ),
+    imageUrl: z.string().optional(),
+    imageFile: z.instanceof(File, { message: "Image is required" }).optional(),
+  })
+  .refine((data) => data.imageUrl || data.imageFile, {
+    message: "Either image URL or image file is required",
+    path: ["imageFile"],
+  });
 
 type RestaurantFormData = z.infer<typeof formSchema>;
 
@@ -64,7 +70,7 @@ const ManageRestaurantForm = ({ onSave, isLoading, restaurant }: Props) => {
       return;
     }
     const deliveryPriceFormatted = parseInt(
-      restaurant.deliveryPrice?.toFixed(2)
+      restaurant.restaurant.deliveryPrice?.toFixed(2)
     );
 
     const menuItemsFormatted = restaurant.restaurant?.menuItems?.map(
@@ -101,7 +107,10 @@ const ManageRestaurantForm = ({ onSave, isLoading, restaurant }: Props) => {
       formData.append(`menuItems[${index}][name]`, menuItem.name);
       formData.append(`menuItems[${index}][price]`, String(menuItem.price));
     });
-    formData.append("imageFile", formDataJson.imageFile);
+
+    if (formDataJson.imageFile) {
+      formData.append("imageFile", formDataJson.imageFile);
+    }
 
     onSave(formData);
   };
